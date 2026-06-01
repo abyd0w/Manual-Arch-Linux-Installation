@@ -7,7 +7,7 @@
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=for-the-badge)](https://GitHub.com/abydow/Manual-Arch-Linux-Installation/graphs/commit-activity)
 </div>
 
-*[Master Arch Linux installation from scratch and gain complete control over your system from here](https://github.com/abyd0w/Manual-Arch-Linux-Installation/blob/main/Ultimate_arch_install_guide.md)*
+*[Master Arch Linux installation from scratch and gain complete control over your system from here](https://github.com/abyd0w/Manual-Arch-Linux-Installation/blob/main/arch_install_guide.md)*
 - 🏗️  Build your system from ground
 - ⚡  Lightning-fast performance
 - 🎛️  Complete customization control
