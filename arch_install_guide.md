@@ -1,4 +1,4 @@
-# 🚀 The Arch Linux Installation Guide 
+#  The Arch Linux Installation Guide 
 
 **Transform your machine into a secure, modern Linux powerhouse with encryption, lightning-fast BTRFS snapshots, and Hyprland.**
 
@@ -10,131 +10,59 @@
 
 > **⚡ This guide follows the acclaimed tutorial by The Rad Lectures, enhanced with extensive research and battle-tested configurations.**
 
----
+##  Pre-Installation Setup
 
-## 📦 Pre-Installation Setup
-
-### 🌐 Step 1: Download Arch Linux ISO
-
-#### 📥 Official Download
+### Step 1: Download Arch Linux ISO
 
  **Navigate to**: [archlinux.org/download](https://archlinux.org/download/)
 
-### 💾 Step 2: Create Bootable USB Drive
+### Step 2: Create Bootable USB Drive
 
  **Navigate to**: [Ventoy setup Guide](https://github.com/abyd0w/Manual-Arch-Linux-Installation/tree/main/Ventoy_drive.md)
 
-## 🚀 Installation Process
+##  Installation Process
 
 > **⚠️ WARNING: The following steps will completely erase your target drive. Ensure you have backed up all important data!**
 
-### 📺 Chapter 1: Booting into Arch ISO 
+------
+
+###  Chapter 1: Booting into Arch ISO 
 
 **🎯 Objective**: Successfully boot from USB and prepare the live environment
+> IF you don't know how to prepare a live environment check [Readme.md](https://github.com/abyd0w/Manual-Arch-Linux-Installation/edit/main/README.md) 
 
 #### 🔄 Boot Sequence
 
 1. **Insert USB** into target machine
 2. **Power on** and access boot menu:
    - **Common keys**: `F12`, `F2`, `F8`, `F10`, `ESC`, `DELETE`  
-   - **Manufacturer specific**:
-     - HP: `F9`
-     - Dell: `F12`
-     - Lenovo: `F12` (ThinkPad: `Enter` → `F12`)
-     - ASUS: `F8`
-     - MSI: `F11`
-   > (To be honest, I dont have much idea about this. but I found this chart from a website so I shared it. I have a Asus laptop my bios opens with f2 🫠 )
-3. **Select USB device** from boot options
-4. **Choose "Arch Linux install medium"** (default, wait 15 seconds)
+3. **Select USB device** from boot options, then save and exit
+4. **Choose "Arch Linux install medium"** in the popup (default, wait 15 seconds)
 
 #### 🖥️ Initial Setup Commands
-
 ```bash
 # Verify successful boot (you should see this prompt)
 root@archiso ~ #
-
+```
+```bash
 # Increase console font for better visibility (optional)
 setfont ter-132b
 # Alternative sizes: ter-118b, ter-124b, ter-128b
-
-# Verify UEFI boot mode (critical check)
-ls /sys/firmware/efi/efivars
-# Should list many files. If "No such file or directory" = BIOS mode
 ```
-
-**🔍 What These Commands Do:**
-- `setfont ter-132b`: Enlarges console text for high-DPI displays
-- `ls /sys/firmware/efi/efivars`: Confirms UEFI boot (required for this guide)
+```bash
+# Verify UEFI boot mode (critical check)
+cat /sys/firmware/efi/fw_platform_size
+# Should return a number. If "No such file or directory" = BIOS mode
+```
 
 **❌ Troubleshooting Boot Issues:**
 - **Black screen**: Try different USB ports, check UEFI/Legacy boot settings  
 - **Boot loops**: Disable Secure Boot in UEFI settings
-- **No USB option**: Enable USB boot in UEFI, change boot order
+- **No USB option**: Enable USB boot in UEFI -> change boot order -> restart 
 
 ---
 
-### 🔐 Chapter 2: SSH Access Setup (Optional)
-
-**🎯 Objective**: Enable remote access for easier command input
-
-> **💡 Pro Tip**: SSH installation allows copy-pasting commands from this guide and better multitasking
-
-#### 🔑 Enable SSH Access
-
-```bash
-# Set temporary root password
-passwd
-# Enter password (suggestion: use something simple like 'temp123')
-# This password is ONLY for installation - not permanent!
-
-# Verify SSH daemon status
-systemctl status sshd
-# Should show: Active: active (running)
-
-# If not running, start it
-systemctl start sshd
-
-# Alternative: Enable SSH with single command
-systemctl enable --now sshd
-```
-
-**🔍 Security Context:**
-- This password is temporary and only exists in live USB environment
-- SSH access is local network only during installation
-- Service stops when you reboot into installed system
-
-#### 📶 Get IP Address for SSH
-
-```bash
-# Display all network interfaces
-ip addr show
-
-# Find your IP (usually starts with 192.168.x.x or 10.x.x.x)
-ip route get 8.8.8.8 | grep src
-```
-
-#### 💻 Connect from Secondary Device
-
-**From Linux/macOS:**
-```bash
-# Connect via SSH (replace with your actual IP)
-ssh root@192.168.1.100
-# Accept fingerprint: yes
-# Enter temporary password
-```
-
-**From Windows:**
-```bash
-# Using built-in SSH client (Windows 10+)
-ssh root@192.168.1.100
-
-# Or use PuTTY
-# Host: 192.168.1.100, Port: 22, Connection Type: SSH
-```
-
----
-
-### 🌐 Chapter 3: Internet Connectivity
+###  Chapter 2: Internet Connectivity
 
 **🎯 Objective**: Establish stable internet connection for package downloads
 
@@ -156,20 +84,20 @@ dhcpcd
 ```bash
 # Enter iwctl interactive mode
 iwctl
-
+```
+```bash
 # List wireless devices
 [iwd]# device list
 # Note your device name (usually wlan0)
-
-# Scan for networks
-[iwd]# station wlan0 scan
-
+```
+```bash
 # List available networks
 [iwd]# station wlan0 get-networks
-
+```
+```bash
 # Connect to network (replace with your network name)
-[iwd]# station wlan0 connect "Your-WiFi-Name"
-# Enter password when prompted
+[iwd]# station wlan0 connect <Your-WiFi-Name>
+# Enter password when prompted passphrase
 
 # Exit iwctl
 [iwd]# exit
@@ -178,42 +106,13 @@ iwctl
 ping -c 5 google.com
 # Should show 0% packet loss
 ```
-
-#### 🔧 Advanced WiFi Troubleshooting
-
-```bash
-# If WiFi not detected
-rfkill list
-# Check if wireless is blocked
-
-# Unblock if necessary  
-rfkill unblock wifi
-
-# Manual IP configuration (if DHCP fails)
-ip addr add 192.168.1.100/24 dev wlan0
-ip route add default via 192.168.1.1
-
-# DNS configuration
-echo "nameserver 8.8.8.8" > /etc/resolv.conf
-```
-
-**📊 Connection Speed Test:**
-```bash
-# Download speed test (approximate)
-curl -o /dev/null http://speedtest-ny.turnkeyinternet.net/100mb.bin
-
-# Basic connectivity test
-curl -I https://archlinux.org
-# Should return HTTP/2 200
-```
-
 ---
 
-### ⏰ Chapter 4: System Time and Locale
+###  Chapter 3: System Time and Locale
 
 **🎯 Objective**: Configure timezone, locale, and keyboard layout for your region
 
-#### 🗺️ Timezone Configuration
+#### Timezone Configuration
 
 ```bash
 # List all timezones
@@ -225,7 +124,7 @@ timedatectl list-timezones | grep Europe
 timedatectl list-timezones | grep Asia
 
 # Set your timezone (replace with yours)
-timedatectl set-timezone America/New_York
+timedatectl set-timezone Asia/Kokata
 # Examples:
 # timedatectl set-timezone Europe/London
 # timedatectl set-timezone Asia/Tokyo
@@ -238,7 +137,7 @@ timedatectl set-ntp true
 timedatectl status
 ```
 
-#### ⌨️ Keyboard Layout (Non-US users)
+#### Keyboard Layout (Non-US users)
 
 ```bash
 # List available keyboard layouts
@@ -255,7 +154,7 @@ loadkeys es          # Spanish
 loadkeys uk          # UK English
 ```
 
-**🔍 Popular Keyboard Layouts:**
+** Popular Keyboard Layouts:**
 - `us`: US English (default)
 - `uk`: UK English  
 - `de`: German
@@ -265,36 +164,17 @@ loadkeys uk          # UK English
 - `ru`: Russian
 - `jp`: Japanese
 
-#### 🌍 Locale Preview
-
-```bash
-# Check current locale
-locale
-
-# This will be configured later in chroot
-# For now, system uses default C/POSIX locale
-```
-
-**🔍 What These Commands Do:**
-- `timedatectl set-timezone`: Sets system timezone for proper timestamps
-- `timedatectl set-ntp true`: Enables automatic time synchronization  
-- `loadkeys`: Temporarily changes keyboard layout for installation
-- System time affects SSL certificates and package signatures
-
 ---
 
-### 💾 Chapter 5: Disk Partitioning  
+###  Chapter 4: Disk Partitioning  
 
 **🎯 Objective**: Create GPT partition table with EFI boot and encrypted root partitions
 
-#### 🔍 Identify Target Drive
+####  Identify Target Drive
 
 ```bash
 # List all storage devices
 lsblk
-
-# Detailed information  
-fdisk -l
 
 # Identify your target drive
 # Common examples:
@@ -305,17 +185,19 @@ fdisk -l
 
 **⚠️ CRITICAL WARNING**: Double-check your target drive! The following steps will **permanently erase** all data on the selected drive.
 
-#### 🗂️ Create Partition Table
+####  Create Partition Table
 
 ```bash
 # Launch gdisk (for UEFI systems)
-gdisk /dev/sda
-# Replace 'sda' with your actual drive
-
+gdisk /dev/nvme0n1
+# Replace 'sda' with your actual drive like sda
+```
+```bash
 # GPT partitioning commands in gdisk:
 Command (? for help): o      # Create new empty GUID partition table (GPT)
 Proceed? (Y/N): y           # Confirm deletion of existing data
-
+```
+```bash
 # Create EFI System Partition (ESP)
 Command (? for help): n      # Create new partition
 Partition number (1-128, default 1): 1
@@ -327,9 +209,10 @@ Hex code or GUID: ef00     # EFI System Partition type
 Command (? for help): n      # Create new partition
 Partition number (2-128, default 2): 2
 First sector: [Enter]       # Use default
-Last sector: [Enter]        # Use remaining space
+Last sector: +200G          # TO Use remaining space keep it blank and press enter
 Hex code or GUID: [Enter]   # Default Linux filesystem (8300)
-
+```
+```bash
 # Verify partition layout
 Command (? for help): p      # Print partition table
 
@@ -338,61 +221,46 @@ Command (? for help): w      # Write table to disk and exit
 Do you want to proceed? (Y/N): y
 ```
 
-#### ✅ Verify Partitioning
+#### Verify Partitioning
 
 ```bash
 # Check new partition layout
-lsblk /dev/sda
+lsblk
 
-# Expected output:
-# sda                         disk
-# ├─sda1                      part    1G     EFI System  
-# └─sda2                      part    XXG    Linux filesystem
+# Expected output or similar:
+# nvme0n1                          disk
+# ├─nvme0n1p1                      part    1G     EFI System  
+# └─nvme0n1p2                      part    200G   Linux filesystem
 ```
 
-**🎯 Partition Scheme Explanation:**
-- **sda1** (1GB): EFI System Partition - stores bootloader
-- **sda2** (remaining): Encrypted BTRFS root filesystem
-
-**📊 Advanced Partitioning Options:**
-
-For dual-boot or complex setups:
-```bash
-# Example: Windows dual-boot
-# sda1: EFI System (shared)
-# sda2: Microsoft Reserved (existing)
-# sda3: Windows C: (existing)
-# sda4: Arch Linux encrypted (new)
-
-# Example: Separate home partition
-# sda1: EFI System (1GB)
-# sda2: Root encrypted (50GB)
-# sda3: Home encrypted (remaining)
-```
+** Partition Scheme Explanation:**
+- **nvme0n1p1** (1GB): EFI System Partition - stores bootloader
+- **nvme0n1p2** (200gb): Encrypted BTRFS root filesystem
+- We are not setting up swap cause its inefficient and also rest of our ssd free for other use, we can definitely use it later if we need to..
 
 ---
 
-### 🔐 Chapter 6: Disk Encryption with LUKS
+### Chapter 5: Disk Encryption with LUKS
 
-**🎯 Objective**: Encrypt the root partition with military-grade LUKS encryption
+**🎯 Objective**: Encrypt the root partition with LUKS encryption
 
-#### 🛡️ LUKS Encryption Setup
+#### LUKS Encryption Setup
 
 ```bash
 # Format partition with LUKS encryption
-cryptsetup luksFormat /dev/sda2
+cryptsetup luksFormat /dev/nvme0n1p2
 
 # Confirmation prompt
 WARNING!
 ========
-This will overwrite data on /dev/sda2 irrevocably.
+This will overwrite data on /dev/nvme0n1p2 irrevocably.
 
 Are you sure? (Type uppercase yes): YES
 
 # Enter passphrase (this is your disk encryption password)
 # IMPORTANT: Choose a strong but memorable passphrase
 # You'll need this EVERY TIME you boot your system
-Enter passphrase for /dev/sda2: [your-strong-passphrase]
+Enter passphrase for /dev/nvme0n1p2: [your-strong-passphrase]
 Verify passphrase: [your-strong-passphrase]
 ```
 
@@ -400,35 +268,15 @@ Verify passphrase: [your-strong-passphrase]
 
 ```bash
 # Open the encrypted partition
-cryptsetup luksOpen /dev/sda2 main
+cryptsetup luksOpen /dev/nvme0n1p2 main
 # 'main' is an arbitrary name for the decrypted device
 
 # Enter the passphrase you just created
-Enter passphrase for /dev/sda2: [your-passphrase]
+Enter passphrase for /dev/nvme0n1p2: [your-passphrase]
 
 # Verify encrypted device is available
 ls -la /dev/mapper/
 # Should show: main -> ../dm-0
-```
-
-#### 🔐 Security Best Practices
-
-**🎯 Passphrase Guidelines:**
-- **Length**: 20+ characters recommended
-- **Composition**: Mix of letters, numbers, symbols
-- **Memorability**: Use a memorable sentence/phrase
-- **Example Pattern**: "My$ecur3P@$$phr@s3F0rArch2025!"
-
-**🔧 Advanced LUKS Options:**
-```bash
-# View LUKS header information
-cryptsetup luksDump /dev/sda2
-
-# Backup LUKS header (highly recommended)
-cryptsetup luksHeaderBackup /dev/sda2 --header-backup-file luks-header-backup
-
-# Test different encryption algorithms (optional)
-cryptsetup benchmark
 ```
 
 **📊 Encryption Performance Impact:**
@@ -438,18 +286,15 @@ cryptsetup benchmark
 
 ---
 
-### 🗃️ Chapter 7: BTRFS Filesystem Creation
+###  Chapter 6: BTRFS Filesystem Creation
 
 **🎯 Objective**: Create BTRFS filesystem with subvolumes for maximum flexibility
 
-#### 📁 Create BTRFS Filesystem
+#### Create BTRFS Filesystem
 
 ```bash
 # Format encrypted partition with BTRFS
 mkfs.btrfs /dev/mapper/main
-
-# Optional: Add filesystem label
-mkfs.btrfs -L "ArchRoot" /dev/mapper/main
 
 # Mount filesystem temporarily
 mount /dev/mapper/main /mnt
@@ -458,7 +303,7 @@ mount /dev/mapper/main /mnt
 cd /mnt
 ```
 
-#### 🌳 Create BTRFS Subvolumes
+#### Create BTRFS Subvolumes
 
 ```bash
 # Create root subvolume (Timeshift convention)
@@ -481,7 +326,7 @@ btrfs subvolume list .
 # ID XXX gen XXX top level 5 path @home
 ```
 
-#### 🏠 Subvolume Benefits Explained
+#### Subvolume Benefits Explained
 
 | Subvolume | Purpose | Snapshot Policy |
 |-----------|---------|-----------------|
@@ -493,7 +338,7 @@ btrfs subvolume list .
 
 ```bash
 # Return to root and unmount
-cd /
+cd -
 umount /mnt
 ```
 
@@ -505,7 +350,7 @@ umount /mnt
 
 ---
 
-### 📂 Chapter 8: Mount BTRFS Subvolumes
+### Chapter 7: Mount BTRFS Subvolumes
 
 **🎯 Objective**: Mount subvolumes with performance-optimized options
 
@@ -516,32 +361,42 @@ umount /mnt
 mount -o noatime,ssd,compress=zstd,space_cache=v2,discard=async,subvol=@ \
   /dev/mapper/main /mnt
 
-# Create home directory
+# Create home directory and other directories
 mkdir /mnt/home
+mkdir /mnt/var
+mkdir /mnt/tmp
+mkdir /mnt/opt
+mkdir /mnt/.snapshots
+
 
 # Mount home subvolume
 mount -o noatime,ssd,compress=zstd,space_cache=v2,discard=async,subvol=@home \
   /dev/mapper/main /mnt/home
 
 # Optional: Mount additional subvolumes
-mkdir -p /mnt/var /mnt/tmp /mnt/opt
-mount -o noatime,ssd,compress=zstd,subvol=@var /dev/mapper/main /mnt/var
-mount -o noatime,ssd,compress=zstd,subvol=@tmp /dev/mapper/main /mnt/tmp  
-mount -o noatime,ssd,compress=zstd,subvol=@opt /dev/mapper/main /mnt/opt
+mount -o noatime,ssd,compress=zstd,space_cache=v2,discard=async,subvol=@var /dev/mapper/main /mnt/var
+mount -o noatime,ssd,compress=zstd,space_cache=v2,discard=async,subvol=@tmp /dev/mapper/main /mnt/tmp  
+mount -o noatime,ssd,compress=zstd,space_cache=v2,discard=async,subvol=@opt /dev/mapper/main /mnt/opt
+mount -o noatime,ssd,compress=zstd,space_cache=v2,discard=async,subvol=@.snapshots /dev/mapper/main /mnt/.snapshots
+
+# now you have to disable disable Copy-on-Write for @var and @tmp volumes
+chattrc +C /mnt/var
+chattrc +C /mnt/tmp
+
 ```
 
-#### 🛠️ EFI Partition Setup
+####  EFI Partition Setup
 
 ```bash
 # Format EFI partition with FAT32
-mkfs.fat -F32 /dev/sda1
+mkfs.fat -F32 /dev/nvme0n1p1
 
 # Create boot mount point and mount EFI partition
 mkdir /mnt/boot
-mount /dev/sda1 /mnt/boot
+mount /dev/nvmeon1p1 /mnt/boot
 ```
 
-#### 📊 BTRFS Mount Options Explained
+#### BTRFS Mount Options Explained
 
 | Option | Purpose | Performance Impact |
 |--------|---------|-------------------|
@@ -551,22 +406,24 @@ mount /dev/sda1 /mnt/boot
 | `space_cache=v2` | Improved free space tracking | 🚀 **Faster operations** |
 | `discard=async` | Asynchronous TRIM | 🚀 **Better SSD performance** |
 
-#### ✅ Verify Mount Structure
+#### Verify Mount Structure
 
 ```bash
 # Check mounted filesystems
 lsblk
 
 # Expected output:
-# sda                         disk
-# ├─sda1                      part  /mnt/boot
-# └─sda2                      part  
+# nvme0n1                         disk
+# ├─nvme0n1p1                      part  /mnt/boot
+# └─nvme0n1p2                      part  
 #   └─main                    crypt
-#     ├─/mnt                  btrfs  @ 
-#     └─/mnt/home             btrfs  @home
-
-# Check BTRFS compression stats (after installation)
-compsize /mnt
+#     ├─/mnt                   
+#     └─/mnt/home            
+#     └─/mnt/var            
+#     └─/mnt/tmp
+#     └─/mnt/opt            
+#     └─/mnt/.snapshots           
+            
 ```
 
 **🎯 Compression Benchmark:**
@@ -577,21 +434,16 @@ compsize /mnt
 
 ---
 
-### 📦 Chapter 9: Base System Installation  
+### Chapter 8: Base System Installation  
 
 **🎯 Objective**: Install core Arch Linux system packages
 
-#### 🏗️ Install Base System
+####  Install Base System
 
 ```bash
 # Install base system packages
 pacstrap /mnt base
 
-# Optional: Install additional base packages immediately
-pacstrap /mnt base base-devel linux linux-headers linux-firmware
-
-# Monitor installation progress
-# Base system: ~150 packages, ~500MB download
 ```
 
 #### 🗂️ Generate Filesystem Table
@@ -604,30 +456,39 @@ genfstab -U /mnt >> /mnt/etc/fstab
 cat /mnt/etc/fstab
 
 # Expected entries:
-# UUID=... / btrfs rw,noatime,ssd,compress=zstd,space_cache=v2,subvol=@ 0 0
-# UUID=... /home btrfs rw,noatime,ssd,compress=zstd,space_cache=v2,subvol=@home 0 0  
-# UUID=... /boot vfat rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro 0 2
+# Static information about the filesystems.
+# See fstab(5) for details.
+
+# <file system> <dir> <type> <options> <dump> <pass>
+# /dev/mapper/main
+#UUID=24df375d-795b-4dfb-933b-865ff63e80e2  /            btrfs  rw,noatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@           0 0
+
+# /dev/mapper/main
+UUID=24df375d-795b-4dfb-933b-865ff63e80e2  /home        btrfs  rw,noatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@home        0 0
+
+# /dev/mapper/main
+UUID=24df375d-795b-4dfb-933b-865ff63e80e2  /var         btrfs  rw,noatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@var         0 0
+
+# /dev/mapper/main
+UUID=24df375d-795b-4dfb-933b-865ff63e80e2  /tmp         btrfs  rw,noatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@tmp         0 0
+
+# /dev/mapper/main
+UUID=24df375d-795b-4dfb-933b-865ff63e80e2  /opt         btrfs  rw,noatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@opt         0 0
+
+# /dev/mapper/main
+UUID=24df375d-795b-4dfb-933b-865ff63e80e2  /.snapshots  btrfs  rw,noatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@.snapshots  0 0
+
+# /dev/nvme0n1p1
+UUID=5D24-F105                             /boot        vfat   rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro  0 2
 ```
-
-**🔍 What is pacstrap?**
-- **Purpose**: Installs packages into new root filesystem
-- **Package Manager**: Uses pacman to download and install
-- **Base Package**: Contains essential system tools, kernel, init system
-
-**📊 Base System Components:**
-- **Kernel**: Linux kernel and modules
-- **Init System**: systemd for service management
-- **Package Manager**: pacman for software management
-- **Essential Tools**: bash, coreutils, filesystem tools
-- **Network**: Basic networking utilities
 
 ---
 
-### 🏗️ Chapter 10: Chroot into New System
+### Chapter 9: Chroot into New System
 
 **🎯 Objective**: Enter the installed system for configuration
 
-#### 🔄 Change Root Environment
+#### Change Root Environment
 
 ```bash
 # Enter the new system
@@ -636,11 +497,6 @@ arch-chroot /mnt
 # You are now inside your new Arch Linux installation!
 # Prompt should change to: [root@archiso /]#
 ```
-
-**🔍 What is chroot?**
-- **Change Root**: Changes apparent root directory to /mnt
-- **Isolated Environment**: Commands now run inside new system
-- **Configuration Phase**: All subsequent commands configure the installed system
 
 #### ⚠️ Important Notes
 
@@ -652,15 +508,15 @@ arch-chroot /mnt
 
 ---
 
-### ⚙️ Chapter 11: System Configuration
+### ⚙️ Chapter 10: System Configuration
 
 **🎯 Objective**: Configure timezone, locale, hostname, and users
 
-#### ⏰ Configure Time and Locale
+####  Configure Time and Locale
 
 ```bash
 # Set timezone (replace with your region/city)
-ln -sf /usr/share/zoneinfo/Region/City /etc/localtime
+ln -sf /usr/share/zoneinfo/<Region>/<City> /etc/localtime
 # Examples:
 # ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
 # ln -sf /usr/share/zoneinfo/Europe/London /etc/localtime
@@ -670,7 +526,7 @@ ln -sf /usr/share/zoneinfo/Region/City /etc/localtime
 hwclock --systohc
 
 # Install text editor
-pacman -Sy neovim
+pacman -Syu neovim
 
 # Edit locale configuration
 nvim /etc/locale.gen
@@ -708,7 +564,7 @@ nvim /etc/hosts
 # Add these lines:
 127.0.0.1    localhost
 ::1          localhost  
-127.0.1.1    arch-desktop.localdomain arch-desktop
+127.0.1.1    arch-desktop.localdomain <hostname>
 ```
 
 #### 👤 Create User Accounts
@@ -720,7 +576,7 @@ passwd
 # This should be different from your user password
 
 # Create regular user account (replace 'username' with your choice)
-useradd -mG users,wheel username
+useradd -m -g users -G wheel username
 
 # Set password for user
 passwd username
@@ -738,12 +594,6 @@ echo "username ALL=(ALL) ALL" > /etc/sudoers.d/username
 # Set proper permissions
 chmod 0440 /etc/sudoers.d/username
 ```
-
-**🔐 Password Security Tips:**
-- **Root Password**: Complex, stored securely (emergency use only)
-- **User Password**: Secure but convenient for daily use
-- **Different Passwords**: Never use the same password for both
-- **Password Manager**: Consider using one for complex passwords
 
 ---
 
