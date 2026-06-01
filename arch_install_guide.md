@@ -508,7 +508,7 @@ arch-chroot /mnt
 
 ---
 
-### ⚙️ Chapter 10: System Configuration
+### Chapter 10: System Configuration
 
 **🎯 Objective**: Configure timezone, locale, hostname, and users
 
@@ -551,7 +551,7 @@ echo "LANG=en_US.UTF-8" > /etc/locale.conf
 echo "KEYMAP=us" > /etc/vconsole.conf
 ```
 
-#### 🏠 Set Hostname
+#### Set Hostname
 
 ```bash
 # Set hostname (choose your computer name)
@@ -567,7 +567,7 @@ nvim /etc/hosts
 127.0.1.1    arch-desktop.localdomain <hostname>
 ```
 
-#### 👤 Create User Accounts
+#### Create User Accounts
 
 ```bash
 # Set root password (for emergency access)
@@ -597,36 +597,33 @@ chmod 0440 /etc/sudoers.d/username
 
 ---
 
-### 📡 Chapter 12: Network and Package Configuration
+### Chapter 11: Network and Package Configuration
 
 **🎯 Objective**: Install networking, bootloader, and essential system packages
 
-#### 🌐 Optimize Package Mirrors
+#### Optimize Package Mirrors
 
 ```bash
 # Install reflector for mirror optimization
 pacman -S reflector rsync
 
 # Update mirror list (replace 'United States' with your country)
-reflector -c "United States" -a 12 --sort rate --save /etc/pacman.d/mirrorlist
-
-# Alternative: Multiple countries
-reflector -c "United States,Canada,Mexico" -a 12 --sort rate --save /etc/pacman.d/mirrorlist
+sudo reflector -c India -a 12 --sort rate --save /etc/pacman.d/mirrorlist
 
 # View updated mirror list
-head -20 /etc/pacman.d/mirrorlist
+cat /etc/pacman.d/mirrorlist
 ```
 
-#### 📦 Install Essential Packages
+#### Install Essential Packages
 
 ```bash
 # Update package database and install essential packages
 pacman -Syu base-devel linux linux-headers linux-firmware \
   btrfs-progs grub efibootmgr mtools \
   networkmanager networkmanager-applet \
-  openssh iproute2 iputils \
-  iptables-nft ipset firewalld \
-  acpid reflector grub-btrfs
+  openssh \
+  iptables-nft firewalld \
+  acpid grub-btrfs
 
 # Install hardware-specific packages
 # For Intel CPUs:
@@ -643,9 +640,8 @@ pacman -S pipewire pipewire-pulse pipewire-jack pipewire-alsa \
 pacman -S man-db man-pages texinfo \
   ttf-firacode-nerd alacritty firefox
 
-# Optional: Install multimedia codecs
-pacman -S gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly \
-  gst-libav ffmpeg
+# Optional: gpu package
+nvidia-open nvidia-utils
 ```
 
 #### 📋 Package Categories Explained
@@ -662,11 +658,11 @@ pacman -S gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly \
 
 ---
 
-### 🥾 Chapter 13: Bootloader Configuration
+### Chapter 12: Bootloader Configuration
 
 **🎯 Objective**: Configure GRUB bootloader for encrypted BTRFS system
 
-#### 🔧 Configure Initial RAM Disk
+#### Configure Initial RAM Disk
 
 ```bash
 # Edit mkinitcpio configuration
@@ -684,7 +680,7 @@ HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont bl
 mkinitcpio -P
 ```
 
-#### ⚙️ Install and Configure GRUB
+#### Install and Configure GRUB
 
 ```bash
 # Install GRUB to EFI system partition
@@ -706,8 +702,8 @@ GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet cryptdevice=UUID=your-actual-uuid:m
 # Example:
 # GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet cryptdevice=UUID=12345678-1234-1234-1234-123456789abc:main root=/dev/mapper/main"
 
-# Optional: Reduce GRUB timeout for faster boot
-GRUB_TIMEOUT=3
+# Optional
+GRUB_TIMEOUT=30
 
 # Save and exit
 
@@ -728,7 +724,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 
 ---
 
-### 🔧 Chapter 14: System Services
+### Chapter 13: System Services
 
 **🎯 Objective**: Enable essential system services for automatic startup
 
@@ -740,9 +736,6 @@ systemctl enable NetworkManager
 
 # Bluetooth support
 systemctl enable bluetooth
-
-# SSH access (optional, for remote access)
-systemctl enable sshd
 
 # Firewall protection
 systemctl enable firewalld
@@ -770,7 +763,7 @@ systemctl enable paccache.timer
 
 ---
 
-### 🎉 Chapter 15: First Boot Test
+### 🎉 Chapter 14: First Boot Test
 
 **🎯 Objective**: Test the installation and boot into new system
 
@@ -827,7 +820,7 @@ neofetch  # Install with: sudo pacman -S neofetch
 
 ---
 
-### 🌐 Chapter 16: Post-Boot Network Setup
+### 🌐 Chapter 15: Post-Boot Network Setup
 
 **🎯 Objective**: Configure networking and prepare for desktop environment
 
