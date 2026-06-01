@@ -1,90 +1,14 @@
-# 🚀 The Ultimate Arch Linux Installation Guide 
+# 🚀 The Arch Linux Installation Guide 
 
-**Transform your machine into a secure, modern Linux powerhouse with military-grade encryption, lightning-fast BTRFS snapshots, and the revolutionary COSMIC desktop environment. (we have also covered other desktop environments in the end)**
+**Transform your machine into a secure, modern Linux powerhouse with encryption, lightning-fast BTRFS snapshots, and Hyprland.**
 
-![Arch Linux COSMIC Banner](https://img.shields.io/badge/Arch%20Linux-COSMIC%20Alpha%207-1793d1?style=for-the-badge&logo=archlinux&logoColor=white)
-![BTRFS](https://img.shields.io/badge/BTRFS-Snapshots%20Ready-orange?style=for-the-badge) 
-![LUKS](https://img.shields.io/badge/LUKS-Encrypted-red?style=for-the-badge) 
-![Zram](https://img.shields.io/badge/Zram-Memory%20Boost-green?style=for-the-badge)
+![Arch Linux](https://img.shields.io/badge/Arch%20Linux-1793d1?style=for-the-badge&logo=archlinux&logoColor=white)
+![BTRFS](https://img.shields.io/badge/BTRFS-orange?style=for-the-badge) 
+![LUKS](https://img.shields.io/badge/LUKS%20Encrypted-grey?style=for-the-badge) 
+![Zram](https://img.shields.io/badge/Zram-green?style=for-the-badge)
+![TimeShift](https://img.shields.io/badge/TimeShift-red?style=for-the-badge)
 
 > **⚡ This guide follows the acclaimed tutorial by The Rad Lectures, enhanced with extensive research and battle-tested configurations.**
-
----
-
-## 🎯 What You'll Achieve
-
-By the end of this guide, you'll have a **production-ready** Arch Linux system featuring:
-
-```
-🛡️  LUKS Full-Disk Encryption      →  NSA-level security
-📸  BTRFS Snapshots with Timeshift  →  Time-travel capabilities  
-🚀  Zram Memory Compression         →  50%+ more usable RAM
-🎨  COSMIC Desktop Alpha 7          →  Future of Linux desktop
-⚡  Optimized for SSDs              →  Maximum performance
-🔧  Complete troubleshooting guide  →  Never get stuck again
-```
-
-**⏱️ Total Installation Time: 90-180 minutes**  
-**👤 Skill Level: Intermediate to Advanced**  
-**💾 Minimum Storage: 20GB (50GB+ recommended)**
-
----
-
-## 📋 Table of Contents
-
-| Section | Content | Time Est. |
-|---------|---------|-----------|
-| [🔧 System Requirements](#-system-requirements) | Hardware & preparation checklist | 5 min |
-| [📦 Pre-Installation Setup](#-pre-installation-setup) | USB creation for all OS types | 15 min |
-| [🚀 Installation Process](#-installation-process) | Step-by-step with all commands | 90-120 min |
-| [⚠️ Critical Pitfalls Guide](#️-critical-pitfalls-guide) | Avoid 99% of common mistakes | 10 min |
-| [🎨 Desktop Environment Options](#-desktop-environment-options) | GNOME, KDE, Hyperland setup | 20 min |
-| [🔍 Advanced Troubleshooting](#-advanced-troubleshooting) | Fix any issue that arises | - |
-| [📚 Resources & Community](#-resources--community) | Where to get help | - |
-
----
-
-## 🔧 System Requirements
-
-### 💻 Hardware Compatibility
-
-| Component | Minimum | Recommended | Optimal |
-|-----------|---------|-------------|---------|
-| **CPU** | x86_64 64-bit | Intel i5/AMD Ryzen 5 | Intel i7/AMD Ryzen 7 |
-| **RAM** | 2GB | 8GB | 16GB+ |
-| **Storage** | 20GB | 50GB SSD | 100GB+ NVMe |
-| **Boot** | UEFI | UEFI with Secure Boot | UEFI with TPM 2.0 |
-| **Network** | Ethernet/WiFi | WiFi 6 | WiFi 6E |
-
-### 🛠️ Essential Tools Checklist
-
-- ✅ **USB Drive** (8GB+ capacity, USB 3.0+ recommended)
-- ✅ **Internet Connection** (stable, unlimited preferred)  
-- ✅ **Secondary Device** (for SSH - laptop, phone, tablet)
-- ✅ **Data Backup** (external drive or cloud storage)
-- ✅ **USB Creation Tool** (Rufus, Etcher, or dd command)
-- ✅ **Patience & Coffee** ☕ (essential for first-time installers)
-
-### 🔍 Pre-Flight System Check
-
-Run these commands to verify your system compatibility:
-
-```bash
-# Check if system supports UEFI
-[ -d /sys/firmware/efi ] && echo "✅ UEFI Supported" || echo "❌ BIOS Only"
-
-# Check CPU architecture  
-lscpu | grep Architecture
-# Should show: x86_64
-
-# Check available memory
-free -h
-# Minimum 2GB recommended
-
-# Check storage devices
-lsblk
-# Identify your target installation drive
-```
 
 ---
 
