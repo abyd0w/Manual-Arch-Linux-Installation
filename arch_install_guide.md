@@ -124,7 +124,7 @@ timedatectl list-timezones | grep Europe
 timedatectl list-timezones | grep Asia
 
 # Set your timezone (replace with yours)
-timedatectl set-timezone Asia/Kokata
+timedatectl set-timezone Asia/Kolkata
 # Examples:
 # timedatectl set-timezone Europe/London
 # timedatectl set-timezone Asia/Tokyo
@@ -209,7 +209,7 @@ Hex code or GUID: ef00     # EFI System Partition type
 Command (? for help): n      # Create new partition
 Partition number (2-128, default 2): 2
 First sector: [Enter]       # Use default
-Last sector: +200G          # TO Use remaining space keep it blank and press enter
+Last sector: +200G          # space you intend to use
 Hex code or GUID: [Enter]   # Default Linux filesystem (8300)
 ```
 ```bash
@@ -380,8 +380,8 @@ mount -o noatime,ssd,compress=zstd,space_cache=v2,discard=async,subvol=@opt /dev
 mount -o noatime,ssd,compress=zstd,space_cache=v2,discard=async,subvol=@.snapshots /dev/mapper/main /mnt/.snapshots
 
 # now you have to disable disable Copy-on-Write for @var and @tmp volumes
-chattrc +C /mnt/var
-chattrc +C /mnt/tmp
+chattr +C /mnt/var
+chattr +C /mnt/tmp
 
 ```
 
@@ -393,7 +393,7 @@ mkfs.fat -F32 /dev/nvme0n1p1
 
 # Create boot mount point and mount EFI partition
 mkdir /mnt/boot
-mount /dev/nvmeon1p1 /mnt/boot
+mount /dev/nvme0n1p1 /mnt/boot
 ```
 
 #### BTRFS Mount Options Explained
@@ -641,7 +641,7 @@ pacman -S man-db man-pages texinfo \
   ttf-firacode-nerd alacritty firefox
 
 # Optional: gpu package
-nvidia-open nvidia-utils
+pacman -S nvidia-open nvidia-utils
 ```
 
 #### 📋 Package Categories Explained
@@ -684,10 +684,10 @@ mkinitcpio -P
 
 ```bash
 # Install GRUB to EFI system partition
-grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 
 # Get UUID of encrypted partition
-blkid /dev/sda2
+blkid /dev/nvme0n1p2
 
 # Copy the UUID value (long string after UUID=)
 # Example: 12345678-1234-1234-1234-123456789abc
