@@ -620,7 +620,7 @@ cat /etc/pacman.d/mirrorlist
 # Update package database and install essential packages
 pacman -Syu base-devel linux linux-headers linux-firmware \
   btrfs-progs grub efibootmgr mtools \
-  networkmanager networkmanager-applet \
+  networkmanager network-manager-applet \
   openssh \
   iptables-nft firewalld \
   acpid grub-btrfs
