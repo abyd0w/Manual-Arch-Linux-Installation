@@ -190,7 +190,7 @@ lsblk
 ```bash
 # Launch gdisk (for UEFI systems)
 gdisk /dev/nvme0n1
-# Replace 'sda' with your actual drive like sda
+# Replace 'nvme0n1' with your actual drive like sda
 ```
 ```bash
 # GPT partitioning commands in gdisk:
