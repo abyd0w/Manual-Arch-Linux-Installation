@@ -953,7 +953,7 @@ free -h
 
 ---
 
-### Chapter 18: HYPRLAND Desktop Installation
+### Chapter 17: HYPRLAND Desktop Installation
 
 **🎯 Objective**: Install cutting-edge COSMIC desktop environment
 
