@@ -622,7 +622,7 @@ pacman -Syu base-devel linux linux-headers linux-firmware \
   btrfs-progs grub efibootmgr mtools \
   networkmanager network-manager-applet \
   openssh \
-  iptables-nft firewalld \
+  iptables-nft ipset firewalld \
   acpid grub-btrfs
 
 # Install hardware-specific packages
@@ -633,12 +633,12 @@ pacman -S intel-ucode
 # pacman -S amd-ucode
 
 # Install audio system
-pacman -S pipewire pipewire-pulse pipewire-jack pipewire-alsa \
+pacman -S pipewire pipewire-pulse pipewire-jack pipewire-alsa alsa-utils\
   bluez bluez-utils sof-firmware
 
 # Install useful applications
 pacman -S man-db man-pages texinfo \
-  ttf-firacode-nerd alacritty firefox
+ ttf-jetbrains-mono-nerd alacritty firefox
 
 # Optional: gpu package
 pacman -S nvidia-open nvidia-utils
@@ -728,7 +728,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 
 **🎯 Objective**: Enable essential system services for automatic startup
 
-#### 🚀 Enable Core Services
+#### Enable Core Services
 
 ```bash
 # Network management
@@ -763,7 +763,7 @@ systemctl enable paccache.timer
 
 ---
 
-### 🎉 Chapter 14: First Boot Test
+### Chapter 14: First Boot Test
 
 **🎯 Objective**: Test the installation and boot into new system
 
@@ -820,11 +820,11 @@ neofetch  # Install with: sudo pacman -S neofetch
 
 ---
 
-### 🌐 Chapter 15: Post-Boot Network Setup
+### Chapter 15: Post-Boot Network Setup
 
 **🎯 Objective**: Configure networking and prepare for desktop environment
 
-#### 📶 Connect to WiFi
+#### Connect to WiFi
 
 ```bash
 # List available networks
@@ -840,7 +840,7 @@ ping -c 3 google.com
 nmcli general status
 ```
 
-#### 📦 Install AUR Helper
+#### Install AUR Helper
 
 ```bash
 # Install git (if not already installed)
@@ -848,17 +848,18 @@ sudo pacman -S git
 
 # Clone Paru AUR helper
 git clone https://aur.archlinux.org/paru.git
+git clone https://aur.archlinux.org/yay.git
 cd paru
 
 # Build and install Paru
 makepkg -si
 
-# Clean up
-cd ..
-rm -rf paru
+# Build and install yay
+makepkg -si
 
-# Verify Paru installation
+# Verify installation
 paru --version
+yay  --version
 ```
 
 **🔍 Why AUR Helper?**
@@ -869,11 +870,11 @@ paru --version
 
 ---
 
-### 📸 Chapter 17: Timeshift Snapshot System
+### Chapter 16: Timeshift Snapshot System and Zram
 
 **🎯 Objective**: Set up automated system snapshots for easy rollback
 
-#### 📷 Install Timeshift
+#### Install Timeshift
 
 ```bash
 # Install Timeshift and auto-snapshot hook
@@ -886,11 +887,22 @@ sudo timeshift --create --comments "Fresh Arch installation - $(date +%Y-%m-%d)"
 sudo timeshift --list
 ```
 
-#### ⚙️ Configure GRUB-BTRFS
+#### Configure GRUB-BTRFS
 
 ```bash
+# First enter root environment
+sudo su
+
+# Find your default shell
+echo $SHELL
+# /usr/bin/bash --something like this
+
+# Set nvim as default edtor 
+echo "export EDITOR=nvim" > .bashrc
+source .bashrc
+
 # Edit grub-btrfsd service for proper snapshot detection
-sudo systemctl edit --full grub-btrfsd
+systemctl edit --full grub-btrfsd
 
 # In the editor, find the ExecStart line and modify:
 # Change: ExecStart=/usr/bin/grub-btrfsd --syslog /snapshots
@@ -899,13 +911,14 @@ sudo systemctl edit --full grub-btrfsd
 # Save and exit
 
 # Regenerate GRUB configuration
-sudo grub-mkconfig -o /boot/grub/grub.cfg
+grub-mkconfig -o /boot/grub/grub.cfg
 
 # Enable grub-btrfsd service
 sudo systemctl enable grub-btrfsd
+exit
 ```
 
-#### 💾 Install and Configure Zram
+#### Install and Configure Zram
 
 ```bash
 # Install Zram generator
@@ -913,24 +926,24 @@ sudo pacman -S zram-generator
 
 # Create Zram configuration
 sudo mkdir -p /etc/systemd/zram-generator.conf.d
-sudo tee /etc/systemd/zram-generator.conf <<EOF
+sudo nvim /etc/systemd/zram-generator.conf.d/zram.conf
+
+# Inside the file
 [zram0]
 zram-size = ram / 2
 compression-algorithm = zstd
 swap-priority = 100
-fs-type = swap
-EOF
 
 # Reload systemd and start Zram
-sudo systemctl daemon-reload
-sudo systemctl start dev-zram0.swap
+sudo systemctl daemon-reexec
+sudo systemctl start /dev/zram0
 
 # Verify Zram is working
 zramctl
 free -h
 ```
 
-#### 📊 Zram Benefits
+#### Zram Benefits
 
 | System RAM | Zram Size | Effective RAM | Performance Boost |
 |------------|-----------|---------------|-------------------|
@@ -940,379 +953,28 @@ free -h
 
 ---
 
-### 🎨 Chapter 18: COSMIC Desktop Installation
+### Chapter 18: HYPRLAND Desktop Installation
 
 **🎯 Objective**: Install cutting-edge COSMIC desktop environment
 
-#### 🖥️ Install Display Manager
+#### Install Display Manager
 
 ```bash
-# Install ly display manager (lightweight, beautiful)
-sudo pacman -S ly
+# Install ly display manager 
+sudo pacman -S sddm
 
 # Enable ly service
-sudo systemctl enable ly
-```
-
-#### 🌌 Install COSMIC Desktop
-
-```bash
-# Install COSMIC desktop environment (Alpha 7)
-sudo pacman -S cosmic
-
-# The cosmic package group includes:
-# - cosmic-comp (Wayland compositor)
-# - cosmic-panel (Top panel)
-# - cosmic-launcher (Application launcher)
-# - cosmic-settings (Settings application)
-# - cosmic-files (File manager)
-# - cosmic-text-editor (Text editor)
-# - cosmic-session (Desktop session)
-
-# Reboot to desktop environment
-reboot
-```
-
-#### 🎨 COSMIC First Setup
-
-After reboot:
-
-1. **Login Screen**: Select COSMIC session from session chooser
-2. **Enter Credentials**: Username and password
-3. **Welcome to COSMIC**: First-time setup wizard
-
-**🌟 COSMIC Alpha 7 Features:**
-- ✅ **Workspace Management**: Drag and drop workspaces
-- ✅ **Pinned Workspaces**: Keep workspaces persistent  
-- ✅ **Accessibility**: High contrast, color filters, magnifier
-- ✅ **Global Shortcuts**: System-wide hotkeys
-- ✅ **Fractional Scaling**: Perfect HiDPI support
-- ✅ **Modern Wayland**: Security and performance
-
----
-
-## ⚠️ Critical Pitfalls Guide
-
-### 🚨 The "Big 5" Mistakes That Break Everything
-
-#### 1. 💥 **Wrong UUID in GRUB Configuration**
-
-**🔴 Symptom**: `cryptsetup: device not found` error on boot
-
-**🔧 Fix:**
-```bash
-# Boot from Arch USB, decrypt and mount system
-cryptsetup luksOpen /dev/sda2 main
-mount -o subvol=@ /dev/mapper/main /mnt
-mount /dev/sda1 /mnt/boot
-arch-chroot /mnt
-
-# Get correct UUID
-blkid /dev/sda2
-
-# Fix GRUB configuration
-nvim /etc/default/grub
-# Update UUID in GRUB_CMDLINE_LINUX_DEFAULT
-
-# Regenerate GRUB
-grub-mkconfig -o /boot/grub/grub.cfg
-```
-
-#### 2. 🌐 **Missing NetworkManager Installation**
-
-**🔴 Symptom**: No internet after reboot, can't install packages
-
-**🛡️ Prevention:**
-```bash
-# ALWAYS install before rebooting
-pacman -S networkmanager
-systemctl enable NetworkManager
-```
-
-**🔧 Emergency Fix:**
-```bash
-# Use ethernet if possible, or
-# Boot from USB and chroot to install NetworkManager
-```
-
-#### 3. 🥾 **Forgotten GRUB Installation**
-
-**🔴 Symptom**: System won't boot, no bootloader found
-
-**🔧 Fix:**
-```bash
-# Chroot back into system
-arch-chroot /mnt
-
-# Install GRUB
-grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub
-grub-mkconfig -o /boot/grub/grub.cfg
-```
-
-#### 4. 📁 **Incorrect fstab Generation**
-
-**🔴 Symptom**: Filesystems not mounting, boot hangs
-
-**🛡️ Prevention:**
-```bash
-# Always use UUIDs
-genfstab -U /mnt >> /mnt/etc/fstab
-
-# Verify before chroot
-cat /mnt/etc/fstab
-```
-
-#### 5. 🔐 **Wrong Initramfs Configuration**
-
-**🔴 Symptom**: Can't decrypt partition on boot
-
-**🔧 Fix:**
-```bash
-# Edit mkinitcpio.conf
-nvim /etc/mkinitcpio.conf
-
-# Ensure correct HOOKS order:
-HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block encrypt filesystems fsck)
-
-# Regenerate
-mkinitcpio -P
-```
-
-### 🛠️ Advanced Recovery Procedures
-
-#### 🚑 Emergency System Recovery
-
-```bash
-# Boot from Arch USB
-# Mount encrypted system
-cryptsetup luksOpen /dev/sda2 main
-mount -o subvol=@ /dev/mapper/main /mnt
-mount -o subvol=@home /dev/mapper/main /mnt/home  
-mount /dev/sda1 /mnt/boot
-
-# Chroot and fix issues
-arch-chroot /mnt
-
-# Common fixes:
-grub-mkconfig -o /boot/grub/grub.cfg
-mkinitcpio -P
-systemctl enable NetworkManager
-```
-
-#### 🔧 Bootloader Rescue
-
-```bash
-# Complete GRUB reinstallation
-grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub --recheck
-grub-mkconfig -o /boot/grub/grub.cfg
-
-# Verify EFI entry
-efibootmgr -v
-```
-
----
-
-## 🎨 Desktop Environment Options
-
-### 🖥️ GNOME - Modern Elegance
-
-**⚡ Quick Install:**
-```bash
-# Install GNOME
-sudo pacman -S gnome gnome-extra
-
-# Install GDM display manager
-sudo pacman -S gdm
-
-# Enable services
-sudo systemctl enable gdm
-sudo systemctl disable ly  # If previously enabled
-
-# Reboot to GNOME
-reboot
-```
-
-**🌟 GNOME Features:**
-- ✅ **Wayland Native**: Best Wayland support
-- ✅ **Modern UI**: Clean, touch-friendly interface
-- ✅ **Integrated Apps**: Cohesive application ecosystem
-- ✅ **Accessibility**: Excellent accessibility features
-- ✅ **Enterprise Ready**: Used by major organizations
-
-**🎯 Perfect For:**
-- Users wanting modern, polished experience
-- Touch screen devices
-- Accessibility requirements
-- Integrated workflow
-
-### 🎯 KDE Plasma - Power User Paradise  
-
-**⚡ Quick Install:**
-```bash
-# Install KDE Plasma
-sudo pacman -S plasma-meta kde-applications
-
-# Install SDDM display manager
-sudo pacman -S sddm
-
-# Enable services  
 sudo systemctl enable sddm
-sudo systemctl disable ly gdm  # Disable others
+```
 
-# Reboot to KDE
+#### Install HYPRLAND Desktop
+
+```bash
+# Install HYPRLAND desktop environment 
+sudo pacman -S hyprland kitty rofi dolphin
+
 reboot
 ```
-
-**🌟 KDE Features:**
-- ✅ **Highly Customizable**: Every aspect configurable
-- ✅ **Traditional Desktop**: Familiar Windows-like interface
-- ✅ **Feature Rich**: Extensive application suite
-- ✅ **Multi-Monitor**: Excellent multiple display support
-- ✅ **Gaming Friendly**: Great for gaming setups
-
-**🎯 Perfect For:**
-- Power users and customization enthusiasts
-- Windows migrants
-- Multi-monitor setups
-- Gaming systems
-
-### 🪟 Hyprland - Tiling Window Manager
-
-**⚡ Quick Install:**
-```bash
-# Install Hyprland and essentials
-sudo pacman -S hyprland kitty waybar wofi
-
-# Install additional tools
-sudo pacman -S swaylock swayidle swaybg
-sudo pacman -S wl-clipboard grim slurp mako
-
-# Install fonts and themes
-sudo pacman -S ttf-fira-code noto-fonts noto-fonts-emoji
-sudo pacman -S papirus-icon-theme arc-gtk-theme
-
-# Configure Hyprland
-mkdir -p ~/.config/hypr
-cp /usr/share/hyprland/hyprland.conf ~/.config/hypr/
-```
-
-**🔧 Essential Hyprland Configuration:**
-
-Create `~/.config/hypr/hyprland.conf`:
-```bash
-# Monitor setup
-monitor=,preferred,auto,1
-
-# Input configuration
-input {
-    kb_layout = us
-    follow_mouse = 1
-    touchpad {
-        natural_scroll = yes
-    }
-    sensitivity = 0
-}
-
-# Appearance
-general {
-    gaps_in = 5
-    gaps_out = 20
-    border_size = 2
-    col.active_border = rgba(33ccffee) rgba(00ff99ee) 45deg
-    col.inactive_border = rgba(595959aa)
-    layout = dwindle
-}
-
-decoration {
-    rounding = 10
-    blur {
-        enabled = true
-        size = 3
-        passes = 1
-    }
-    drop_shadow = yes
-    shadow_range = 4
-    shadow_render_power = 3
-    col.shadow = rgba(1a1a1aee)
-}
-
-animations {
-    enabled = yes
-    bezier = myBezier, 0.05, 0.9, 0.1, 1.05
-    animation = windows, 1, 7, myBezier
-    animation = windowsOut, 1, 7, default, popin 80%
-    animation = border, 1, 10, default
-    animation = fade, 1, 7, default
-    animation = workspaces, 1, 6, default
-}
-
-# Key bindings
-$mainMod = SUPER
-
-bind = $mainMod, Q, exec, kitty
-bind = $mainMod, C, killactive,
-bind = $mainMod, M, exit,
-bind = $mainMod, E, exec, nautilus
-bind = $mainMod, V, togglefloating,
-bind = $mainMod, R, exec, wofi --show drun
-bind = $mainMod, P, pseudo,
-bind = $mainMod, J, togglesplit,
-
-# Move focus
-bind = $mainMod, left, movefocus, l
-bind = $mainMod, right, movefocus, r
-bind = $mainMod, up, movefocus, u
-bind = $mainMod, down, movefocus, d
-
-# Switch workspaces
-bind = $mainMod, 1, workspace, 1
-bind = $mainMod, 2, workspace, 2
-bind = $mainMod, 3, workspace, 3
-bind = $mainMod, 4, workspace, 4
-bind = $mainMod, 5, workspace, 5
-
-# Move windows to workspace
-bind = $mainMod SHIFT, 1, movetoworkspace, 1
-bind = $mainMod SHIFT, 2, movetoworkspace, 2
-bind = $mainMod SHIFT, 3, movetoworkspace, 3
-bind = $mainMod SHIFT, 4, movetoworkspace, 4
-bind = $mainMod SHIFT, 5, movetoworkspace, 5
-
-# Window controls
-bindm = $mainMod, mouse:272, movewindow
-bindm = $mainMod, mouse:273, resizewindow
-```
-
-**🌟 Hyprland Features:**
-- ✅ **Dynamic Tiling**: Intelligent window management
-- ✅ **Wayland Native**: Modern display protocol
-- ✅ **Beautiful Animations**: Smooth, customizable effects
-- ✅ **Highly Configurable**: Every aspect customizable
-- ✅ **Performance**: Lightweight and fast
-
-**🎯 Perfect For:**
-- Developers and programmers
-- Keyboard-centric workflows
-- Minimalist aesthetics
-- Maximum screen real estate
-
-### 🔄 Switching Between Desktop Environments
-
-You can have multiple DEs installed and switch between them:
-
-```bash
-# Install multiple desktop environments
-sudo pacman -S gnome plasma-meta cosmic hyprland
-
-# Use unified display manager
-sudo pacman -S sddm
-sudo systemctl enable sddm
-
-# Select different session at login screen
-# Look for session selector (usually gear icon or dropdown)
-```
-
----
 
 ## 🔍 Advanced Troubleshooting
 
@@ -1414,55 +1076,6 @@ sudo nvim /etc/systemd/zram-generator.conf
 sudo systemctl restart dev-zram0.swap
 ```
 
-### 🔧 Common Issues and Solutions
-
-#### Issue: Slow Boot Times
-
-```bash
-# Identify slow services
-systemd-analyze blame | head -10
-
-# Disable unnecessary services
-sudo systemctl disable bluetooth  # If not needed
-sudo systemctl disable cups       # If no printer
-
-# Optimize GRUB timeout
-sudo nvim /etc/default/grub
-# Set: GRUB_TIMEOUT=1
-sudo grub-mkconfig -o /boot/grub/grub.cfg
-```
-
-#### Issue: High Memory Usage
-
-```bash
-# Find memory-hungry processes
-ps aux --sort=-%mem | head -10
-
-# Clear caches if needed
-sudo sync && echo 3 | sudo tee /proc/sys/vm/drop_caches
-
-# Check for memory leaks
-valgrind --tool=memcheck --leak-check=full program-name
-```
-
-#### Issue: WiFi Connection Problems
-
-```bash
-# Reset NetworkManager
-sudo systemctl restart NetworkManager
-
-# Check WiFi hardware
-lspci | grep -i wireless
-lsusb | grep -i wireless
-
-# Install additional drivers
-sudo pacman -S linux-firmware
-# For Broadcom: broadcom-wl
-# For Realtek: rtl88xxau-aircrack-dkms-git
-```
-
----
-
 ## 📚 Resources & Community
 
 ### 📖 Official Documentation
@@ -1471,30 +1084,12 @@ sudo pacman -S linux-firmware
 - 📋 **[Installation Guide](https://wiki.archlinux.org/title/Installation_guide)** - Official installation reference
 - 🗃️ **[BTRFS Wiki](https://wiki.archlinux.org/title/Btrfs)** - Complete BTRFS guide
 - 🔐 **[Encryption Guide](https://wiki.archlinux.org/title/Dm-crypt)** - Full disk encryption documentation
-- 🌌 **[COSMIC Desktop](https://system76.com/cosmic)** - Official COSMIC information
 
 ### 👥 Community Support
 
 - 💬 **[Arch Linux Forums](https://bbs.archlinux.org/)** - Official community forum
 - 🌐 **[r/archlinux](https://reddit.com/r/archlinux)** - Reddit community
 - 💭 **[#archlinux IRC](irc://chat.freenode.net/archlinux)** - Real-time chat support
-- 🎮 **[COSMIC Discord](https://discord.gg/cosmic-desktop)** - COSMIC development chat
-
-### 🛠️ Essential Tools
-
-| Category | Tools | Purpose |
-|----------|-------|---------|
-| **System Monitoring** | `htop`, `btop`, `neofetch` | Resource monitoring |
-| **File Management** | `ranger`, `nnn`, `mc` | Terminal file managers |
-| **Network** | `wavemon`, `bandwhich`, `ss` | Network diagnostics |
-| **Development** | `git`, `docker`, `code` | Development tools |
-| **Backup** | `rsync`, `rclone`, `borg` | Data backup solutions |
-
-### 📱 Mobile Apps for Reference
-
-- **Arch Wiki Viewer** (Android) - Offline wiki access
-- **Termux** (Android) - Full Linux terminal
-- **SSH Client** (iOS/Android) - Remote system access
 
 ---
 
@@ -1526,19 +1121,6 @@ Expected performance on modern hardware:
 | **Disk Performance** | >500MB/s sequential | `hdparm -t /dev/sda` |
 
 ---
-
-## 🎉 Congratulations!
-
-You now have a **state-of-the-art** Arch Linux system with:
-
-```
-🛡️  Military-grade LUKS encryption
-📸  Instant BTRFS snapshots  
-🚀  50%+ more RAM with Zram
-🌌  Future-ready COSMIC desktop
-⚡  Production-ready performance
-🔧  Expert-level troubleshooting skills
-```
 
 **Welcome to the Arch Linux community!** 🎊
 
