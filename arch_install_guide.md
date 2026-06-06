@@ -994,6 +994,9 @@ systemd-analyze critical-chain
 
 # Plot boot process (generates SVG)
 systemd-analyze plot > boot-analysis.svg
+
+#if grub takes time around 7s to 15s , dont worry, the time you take for the encryption password to enter counts in it.
+
 ```
 
 #### 🚨 System Health Monitoring
@@ -1002,8 +1005,13 @@ systemd-analyze plot > boot-analysis.svg
 # Check system logs for errors
 journalctl -p 3 -xb
 
+# AE_ALREADY_EXISTS,AE_NOT_FOUND dont worry about this.
+# "inotifywait was not found" --> fix by installing inotify-tools
+
+sudo pacman -S inotify-tools
+
 # Monitor system resources
-htop          # Interactive process monitor
+btop          # Interactive process monitor
 iotop         # I/O monitoring
 nethogs       # Network usage per process
 
