@@ -1012,14 +1012,12 @@ sudo pacman -S inotify-tools
 
 # Monitor system resources
 btop          # Interactive process monitor
-iotop         # I/O monitoring
 nethogs       # Network usage per process
 
 # Hardware information
 lscpu         # CPU details
 lsblk         # Block devices
 lspci         # PCI devices
-lsusb         # USB devices
 sensors       # Temperature monitoring
 ```
 
@@ -1028,20 +1026,15 @@ sensors       # Temperature monitoring
 ```bash
 # Check filesystem health
 sudo btrfs filesystem show
-sudo btrfs filesystem usage /
+sudo btrfs filesystem usage /home
 
-# Check compression statistics  
-sudo compsize /
-
-# Balance filesystem (monthly maintenance)
-sudo btrfs balance start /
+# Check compression statistics
+sudo pacman -S compsize
+sudo compsize /home
 
 # Scrub filesystem (weekly check)
 sudo btrfs scrub start /
 sudo btrfs scrub status /
-
-# Defragment files (as needed)
-sudo btrfs filesystem defragment -r -v /
 ```
 
 ### 🛠️ Performance Optimization
@@ -1055,15 +1048,15 @@ sudo pacman -S tlp tlp-rdw powertop
 # Enable TLP for laptop power management
 sudo systemctl enable tlp
 sudo systemctl start tlp
+sudo tlp-stat -s        # overall status
+sudo tlp-stat --battery # battery thresholds and info
 
 # Analyze power usage
 sudo powertop
 
-# Check I/O scheduler (should be mq-deadline for SSDs)
+# Check I/O scheduler (should be none for nvme-SSDs)
 cat /sys/block/sda/queue/scheduler
 
-# Set I/O scheduler permanently
-echo 'ACTION=="add|change", KERNEL=="sd[a-z]*", ATTR{queue/scheduler}="mq-deadline"' | sudo tee /etc/udev/rules.d/60-ioschedulers.rules
 ```
 
 #### 🚀 Zram Optimization
@@ -1100,21 +1093,6 @@ sudo systemctl restart dev-zram0.swap
 - 💭 **[#archlinux IRC](irc://chat.freenode.net/archlinux)** - Real-time chat support
 
 ---
-
-## 🏆 Installation Success Metrics
-
-### ✅ Quality Checklist
-
-Your installation is successful when you can confirm:
-
-- [ ] **Boot Security**: System boots with LUKS encryption prompt
-- [ ] **Network Connectivity**: WiFi/Ethernet works automatically  
-- [ ] **Desktop Environment**: COSMIC desktop loads without errors
-- [ ] **System Performance**: Zram active, compression working
-- [ ] **Snapshot System**: Timeshift snapshots created successfully
-- [ ] **Package Management**: Both official and AUR packages install
-- [ ] **Audio System**: Sound works with PipeWire
-- [ ] **Hardware Support**: All devices detected and functional
 
 ### 📊 Performance Benchmarks
 
