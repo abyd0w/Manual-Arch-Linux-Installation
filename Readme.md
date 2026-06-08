@@ -8,6 +8,7 @@
 </div>
 
 *[Master Arch Linux installation from scratch and gain complete control over your system from here](https://github.com/abyd0w/Manual-Arch-Linux-Installation/blob/main/arch_install_guide.md)*
+*[ If you have arch already then secure your system from here](https://github.com/abyd0w/Manual-Arch-Linux-Installation/blob/main/post_install_guide.md)*
 - 🏗️  Build your system from ground
 - ⚡  Lightning-fast performance
 - 🎛️  Complete customization control
@@ -75,6 +76,8 @@ Before you begin, ensure you have completed these essential steps:
 | **Rufus** | Alternative USB tool | [Download](https://rufus.ie/) |
 
 ---
+
+###### [ IF you want to secure your arch desktop, visit this guide ]()
 
 ## 🙏 Acknowledgments
 
