@@ -964,10 +964,10 @@ free -h
 
 ```bash
 # Install ly display manager 
-sudo pacman -S sddm
+sudo pacman -S ly
 
 # Enable ly service
-sudo systemctl enable sddm
+sudo systemctl enable ly
 ```
 
 #### Install HYPRLAND Desktop
