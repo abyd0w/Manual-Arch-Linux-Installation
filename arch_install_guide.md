@@ -638,7 +638,7 @@ pacman -S pipewire pipewire-pulse pipewire-jack pipewire-alsa alsa-utils\
 
 # Install useful applications
 pacman -S man-db man-pages texinfo \
- ttf-jetbrains-mono-nerd alacritty firefox
+ ttf-jetbrains-mono-nerd alacritty firefox pacman-contrib
 
 # Optional: gpu package
 pacman -S nvidia-open nvidia-utils
