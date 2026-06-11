@@ -849,13 +849,16 @@ sudo pacman -S git
 # Clone Paru AUR helper
 git clone https://aur.archlinux.org/paru.git
 git clone https://aur.archlinux.org/yay.git
-cd paru
 
 # Build and install Paru
+cd paru
 makepkg -si
+cd .. /
 
 # Build and install yay
+cd yay
 makepkg -si
+cd ../
 
 # Verify installation
 paru --version
@@ -955,7 +958,7 @@ free -h
 
 ### Chapter 17: HYPRLAND Desktop Installation
 
-**🎯 Objective**: Install cutting-edge COSMIC desktop environment
+**🎯 Objective**: Install cutting-edge Hyprland desktop environment
 
 #### Install Display Manager
 
